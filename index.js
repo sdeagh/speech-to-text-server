@@ -1,18 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const config = require('./env.json');
+var watson = require('watson-developer-cloud');
+var vcapServices = require('vcap_services');
+
 
 const app = express();
 app.use(cors());
 
 var TextToSpeechV1 = require('watson-developer-cloud/text-to-speech/v1');   
-    var text_to_speech = new TextToSpeechV1 ({
-        username: '7a8d538b-cbc8-417c-bcf8-4d55ee8eefd9',
-        password: 'G5CpJP6BH1GG'
-    });
+var text_to_speech = new TextToSpeechV1 ({
+    "username": "313cbbc7-62b8-473d-9077-b434fbdb3321",
+    "password": "dXS0sicWLO6A"
+}); 
 
 app.get('/voices', (req, res) => {
-    
     text_to_speech.listVoices(null, function(error, voices) {
         if (error) {
             console.log('Error:', error);
@@ -22,26 +25,21 @@ app.get('/voices', (req, res) => {
     });
 })
 
-app.get('/play', (req, res) => {
-    var params = {
-        text: 'Hello world',
-        voice: 'en-US_AllisonVoice',
-        accept: 'audio/basic'
-    };
-      
-    // Pipe the synthesized text to a file.
-    /* text_to_speech.synthesize(params).on('error', function(error) {
-        console.log('Error:', error);
-    }).pipe(fs.createWriteStream('hello_world.wav')); */
-
-    text_to_speech.synthesize(params, function(error, speech) {
-        if (error)
-          console.log('Error:', error);
-        else
-          console.log(JSON.stringify(speech, null, 2));
-      });
-
-})
+app.get('/play', (req, res, next) => {
+    params = {
+        text: req.query.text,
+        voice: req.query.voice,
+        accept: "audio/wav"
+    }
+    const transcript = text_to_speech.synthesize(params);
+    transcript.on('response', (response) => {
+        if (req.query.download) {
+            response.headers['content-disposition'] = `attachment; filename=transcript.${getFileExtension(req.query.accept)}`;
+        }
+    });
+    transcript.on('error', next);
+    transcript.pipe(res);
+});
 
 
 app.listen(3000, function() {
