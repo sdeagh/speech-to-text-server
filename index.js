@@ -3,7 +3,6 @@ const cors = require('cors');
 const fs = require('fs');
 const config = require('./env.json');
 const watson = require('watson-developer-cloud');
-
 const app = express();
 app.use(cors());
 
@@ -34,7 +33,6 @@ app.get('/record', (req, res, next) => {
     recognizeMicrophone()
 });
   
-
 app.get('/voices', (req, res) => {
     text_to_speech.listVoices(null, function(error, voices) {
         if (error) {
@@ -65,6 +63,3 @@ app.get('/play', (req, res, next) => {
 app.listen(3000, function() {
     console.log("Speech server started on port 3000");
 });
-
-
-
