@@ -3,6 +3,8 @@ const cors = require('cors');
 const fs = require('fs');
 const config = require('./env.json');
 const watson = require('watson-developer-cloud');
+const vcapServices = require('vcap_services');
+
 const app = express();
 app.use(cors());
 
@@ -12,25 +14,36 @@ var text_to_speech = new TextToSpeechV1 ({
     "password": "dXS0sicWLO6A"
 }); 
 
-const stt = new watson.SpeechToTextV1({
+/* const stt = new watson.SpeechToTextV1({
     "username": "4d4d34a4-744e-48f4-9242-882c3d1491bd",
     "password": "iB8DHaSPekXD"    
-});
+}); */
   
-const authService = new watson.AuthorizationV1(stt.getCredentials());
+// speech to text token endpoint
+var sttAuthService = new watson.AuthorizationV1(
+    Object.assign(
+        {
+            username: "4d4d34a4-744e-48f4-9242-882c3d1491bd", // or hard-code credentials here
+            password: "iB8DHaSPekXD"
+        },
+        vcapServices.getCredentials('speech_to_text') // pulls credentials from environment in bluemix, otherwise returns {}
+    )
+);
 
-app.get('/api/token', (req, res, next) => {
-    authService.getToken((err, token) => {
-        if (err) {
-            next(err);
-        } else {
+app.use('/api/token', function(req, res) {
+    sttAuthService.getToken(
+        {
+            url: watson.SpeechToTextV1.URL
+        },
+        function(err, token) {
+            if (err) {
+                console.log('Error retrieving token: ', err);
+                res.status(500).send('Error retrieving token');
+                return;
+            }
             res.send(token);
         }
-    });
-});
-
-app.get('/record', (req, res, next) => {
-    recognizeMicrophone()
+    );
 });
   
 app.get('/voices', (req, res) => {
