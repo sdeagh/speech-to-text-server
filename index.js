@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-const config = require('./env.json');
 const watson = require('watson-developer-cloud');
 const vcapServices = require('vcap_services');
 
