@@ -10,8 +10,10 @@ app.use(cors());
 
 var TextToSpeechV1 = require('watson-developer-cloud/text-to-speech/v1');   
 var text_to_speech = new TextToSpeechV1 ({
-    "username": "313cbbc7-62b8-473d-9077-b434fbdb3321",
-    "password": "dXS0sicWLO6A"
+    "username": process.env.TTS_USERNAME,
+    "password": process.env.TTS_PASSWORD
+/*     "username": "313cbbc7-62b8-473d-9077-b434fbdb3321",
+    "password": "dXS0sicWLO6A" */
 }); 
 
 /* const stt = new watson.SpeechToTextV1({
