@@ -12,21 +12,14 @@ var TextToSpeechV1 = require('watson-developer-cloud/text-to-speech/v1');
 var text_to_speech = new TextToSpeechV1 ({
     "username": process.env.TTS_USERNAME,
     "password": process.env.TTS_PASSWORD
-/*     "username": "313cbbc7-62b8-473d-9077-b434fbdb3321",
-    "password": "dXS0sicWLO6A" */
 }); 
-
-/* const stt = new watson.SpeechToTextV1({
-    "username": "4d4d34a4-744e-48f4-9242-882c3d1491bd",
-    "password": "iB8DHaSPekXD"    
-}); */
   
 // speech to text token endpoint
 var sttAuthService = new watson.AuthorizationV1(
     Object.assign(
         {
-            username: "4d4d34a4-744e-48f4-9242-882c3d1491bd", // or hard-code credentials here
-            password: "iB8DHaSPekXD"
+            username: process.env.STT_USERNAME,
+            password: process.env.STT_PASSWORD
         },
         vcapServices.getCredentials('speech_to_text') // pulls credentials from environment in bluemix, otherwise returns {}
     )
